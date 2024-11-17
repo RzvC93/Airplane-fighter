@@ -1,0 +1,41 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+}
+
+#myCanvas {
+	width: 80vw; /* Lățimea inițială ca procent din viewport */
+	height: auto; /* Înălțimea automată pentru păstrarea proporțiilor */
+	aspect-ratio: 4 / 3; /* Raportul lățime/înălțime */
+	max-width: 1500px; /* Lățimea maximă */
+	min-width: 550px; /* Lățimea minimă */
+	min-height: 550px; /* Înălțimea minimă */
+	background-color: aqua;
+}
+
+#start-game-btn {
+	width: 40%;
+	max-width: 200px;
+	margin: 0 auto;
+	padding: 10px; /* interior */
+	margin: 20px; /* exterior */
+	background-color: #e74c3c;
+	color: #ecf0f1;
+	font-weight: bold;
+	border-radius: 20px;
+	text-align: center;
+}
+
+#start-game-btn:hover {
+	background-color: #48c7e4;
+	cursor: pointer;
+}
