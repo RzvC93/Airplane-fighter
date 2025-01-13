@@ -13,13 +13,13 @@ body {
 }
 
 #myCanvas {
-	width: 80vw; /* Lățimea inițială ca procent din viewport */
-	height: auto; /* Înălțimea automată pentru păstrarea proporțiilor */
-	aspect-ratio: 4 / 3; /* Raportul lățime/înălțime */
-	max-width: 1500px; /* Lățimea maximă */
-	min-width: 550px; /* Lățimea minimă */
-	min-height: 550px; /* Înălțimea minimă */
-	background-color: aqua;
+	width: 80vw;
+	height: auto;
+	aspect-ratio: 4 / 3;
+	max-width: 1500px;
+	min-width: 550px;
+	min-height: 550px;
+	background-color: #000000;
 }
 
 #start-game-btn {
@@ -36,6 +36,6 @@ body {
 }
 
 #start-game-btn:hover {
-	background-color: #48c7e4;
+	background-color: #000000;
 	cursor: pointer;
 }
