@@ -18,6 +18,11 @@ let leftPressed = false;
 let upPressed = false;
 let downPressed = false;
 
+let canvasUpdateInterval;
+let timeIncreaseInterval;
+let objectCreationInterval;
+let gameOver = false;
+
 let objects = [];
 
 function drawPlane() {
@@ -147,10 +152,20 @@ function increaseTime() {
 
 function updateCanvas() {
 	if (gameOver) {
+		clearInterval(canvasUpdateInterval);
+		clearInterval(timeIncreaseInterval);
+		clearInterval(objectCreationInterval);
+
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.font = "30px bold Permanent Marker";
 		ctx.fillStyle = "white";
 		ctx.fillText("GAME OVER", canvas.width / 2 - 100, canvas.height / 2);
+		ctx.fillText(
+			`Score: ${time} points`,
+			canvas.width / 2 - 100,
+			canvas.height / 2 + 60
+		);
+
 		return;
 	}
 
@@ -190,9 +205,9 @@ function startGameBtn() {
 	document.getElementById("start-game-btn").disabled = true;
 	document.addEventListener("keydown", keyDownHandler, false);
 	document.addEventListener("keyup", keyUpHandler, false);
-	setInterval(updateCanvas, 100 / 60);
-	setInterval(increaseTime, 10);
-	setInterval(createObject, 1500);
+	canvasUpdateInterval = setInterval(updateCanvas, 100 / 60);
+	timeIncreaseInterval = setInterval(increaseTime, 10);
+	objectCreationInterval = setInterval(createObject, 1500);
 }
 
 function keyDownHandler(e) {
@@ -248,7 +263,6 @@ function drawObject() {
 }
 drawObject();
 
-let gameOver = false;
 function collisionDetection(object) {
 	if (
 		airplaneXPos < object.x + object.width &&
