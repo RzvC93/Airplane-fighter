@@ -1,28 +1,27 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
-
 const airplaneBaseWidth = 20;
 const airplaneBaseHeight = 120;
+const TEN = 10;
+const TWENTY = 20;
+const THIRTY = 30;
+const FORTY = 40;
+const SIXTY = 60;
+const ONE_HUNDRED = 100;
+const createObjInterval = 1500;
+
 let airplaneXPos = canvas.width / 2 - airplaneBaseWidth / 2;
 let airplaneYPos = canvas.height - airplaneBaseHeight - 10;
 let time = 0;
-// let avoided = 0;
-// let destroyed = 0;
 let elapsedTime = 0;
 const oneSecond = 1000;
 let dX = 2;
 let dY = 2;
 
-let rightPressed = false;
-let leftPressed = false;
-let upPressed = false;
-let downPressed = false;
-
 let canvasUpdateInterval;
 let timeIncreaseInterval;
 let objectCreationInterval;
 let gameOver = false;
-
 let objects = [];
 
 function drawPlane() {
@@ -40,14 +39,13 @@ function drawPlane() {
 	//left wing
 	const wingXPosStart = airplaneXPos;
 	const wingYPosStart = airplaneYPos + airplaneBaseHeight / 2;
-
 	ctx.beginPath();
 	ctx.fillStyle = "white";
 	ctx.strokeStyle = "red";
 	ctx.globalAlpha = 1.0;
 	ctx.moveTo(wingXPosStart, wingYPosStart);
-	ctx.lineTo(wingXPosStart - 40, wingYPosStart + 60);
-	ctx.lineTo(wingXPosStart, wingYPosStart + 30);
+	ctx.lineTo(wingXPosStart - FORTY, wingYPosStart + SIXTY);
+	ctx.lineTo(wingXPosStart, wingYPosStart + THIRTY);
 	ctx.fill();
 	ctx.stroke();
 	ctx.globalAlpha = 1.0;
@@ -59,8 +57,8 @@ function drawPlane() {
 	ctx.strokeStyle = "red";
 	ctx.globalAlpha = 1.0;
 	ctx.moveTo(wingXPosStart + airplaneBaseWidth, wingYPosStart);
-	ctx.lineTo(wingXPosStart + 60, wingYPosStart + 60);
-	ctx.lineTo(wingXPosStart + airplaneBaseWidth, wingYPosStart + 30);
+	ctx.lineTo(wingXPosStart + SIXTY, wingYPosStart + SIXTY);
+	ctx.lineTo(wingXPosStart + airplaneBaseWidth, wingYPosStart + THIRTY);
 	ctx.fill();
 	ctx.stroke();
 	ctx.globalAlpha = 1.0;
@@ -83,40 +81,18 @@ function drawPlane() {
 	ctx.globalAlpha = 1.0;
 	ctx.closePath();
 }
+
 drawPlane();
 
 function drawScoreByTime() {
 	ctx.font = "30px bold Permanent Marker";
 	ctx.fillStyle = "white";
-	//ctx.globalAlpha = 0.3;
 	const scoreWidth = ctx.measureText(`Time: ${time}`).width;
-	const xPosition = Math.min(20, canvas.width - scoreWidth - 20);
-	ctx.fillText(`Time: ${time}`, xPosition, 40);
-	//ctx.globalAlpha = 1.0;
+	const xPosition = Math.min(TWENTY, canvas.width - scoreWidth - FORTY);
+	ctx.fillText(`Time: ${time}`, xPosition, FORTY);
 }
+
 drawScoreByTime();
-
-// function drawScoreByAvoidedObjects() {
-// 	ctx.font = "30px bold Permanent Marker";
-// 	ctx.fillStyle = "white";
-// 	ctx.globalAlpha = 0.3;
-// 	const avoidedWidth = ctx.measureText(`Avoided: ${avoided}`).width;
-// 	const xPosition = Math.min(20, canvas.width - avoidedWidth - 20);
-// 	ctx.fillText(`Avoided: ${avoided}`, xPosition, 80);
-// 	ctx.globalAlpha = 1.0;
-// }
-// drawScoreByAvoidedObjects();
-
-// function drawScoreByDestroyedObjects() {
-// 	ctx.font = "30px bold Permanent Marker";
-// 	ctx.fillStyle = "white";
-// 	ctx.globalAlpha = 0.3;
-// 	const destroyedWidth = ctx.measureText(`Destroyed: ${destroyed}`).width;
-// 	const xPosition = Math.min(20, canvas.width - destroyedWidth - 20);
-// 	ctx.fillText(`Destroyed: ${destroyed}`, xPosition, 120);
-// 	ctx.globalAlpha = 1.0;
-// }
-// drawScoreByDestroyedObjects();
 
 function drawTimer() {
 	ctx.font = "30px bold Permanent Marker";
@@ -125,8 +101,8 @@ function drawTimer() {
 
 	// Calculate the minutes, seconds and milliseconds of the total elapsed time.
 	let milliseconds = elapsedTime % oneSecond;
-	let seconds = Math.floor(elapsedTime / oneSecond) % 60;
-	let minutes = Math.floor(elapsedTime / oneSecond / 60);
+	let seconds = Math.floor(elapsedTime / oneSecond) % SIXTY;
+	let minutes = Math.floor(elapsedTime / oneSecond / SIXTY);
 
 	// Format the timer
 	const timerText = `${minutes.toString().padStart(2, "0")}:${seconds
@@ -135,16 +111,17 @@ function drawTimer() {
 
 	// Calculate the width of the text to position it correctly.
 	const timerTextWidth = ctx.measureText(timerText).width;
-	const xPosition = Math.max(canvas.width - timerTextWidth - 20, 20);
+	const xPosition = Math.max(canvas.width - timerTextWidth - TWENTY, TWENTY);
 
 	// Draw the text on canvas.
-	ctx.fillText(timerText, xPosition, 40);
+	ctx.fillText(timerText, xPosition, FORTY);
 	ctx.globalAlpha = 1.0;
 }
+
 drawTimer();
 
 function increaseTime() {
-	elapsedTime += 10;
+	elapsedTime += TEN;
 	if (elapsedTime % oneSecond === 0) {
 		time += 1;
 	}
@@ -159,11 +136,15 @@ function updateCanvas() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		ctx.font = "30px bold Permanent Marker";
 		ctx.fillStyle = "white";
-		ctx.fillText("GAME OVER", canvas.width / 2 - 100, canvas.height / 2);
+		ctx.fillText(
+			"GAME OVER",
+			canvas.width / 2 - ONE_HUNDRED,
+			canvas.height / 2
+		);
 		ctx.fillText(
 			`Score: ${time} points`,
-			canvas.width / 2 - 100,
-			canvas.height / 2 + 60
+			canvas.width / 2 - ONE_HUNDRED,
+			canvas.height / 2 + SIXTY
 		);
 
 		return;
@@ -171,82 +152,67 @@ function updateCanvas() {
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawPlane();
-	drawObject();
+	drawObjects();
 	drawScoreByTime();
-	// drawScoreByAvoidedObjects();
-	// drawScoreByDestroyedObjects();
 	drawTimer();
 
-	for (let i = 0; i < objects.length; i++) {
+	for (let i = 0; i < objects.length; ++i) {
 		collisionDetection(objects[i]);
 		if (gameOver) break;
-	}
-
-	if (rightPressed) {
-		airplaneXPos = Math.min(
-			airplaneXPos + dX,
-			canvas.width - airplaneBaseWidth - 40
-		);
-	} else if (leftPressed) {
-		airplaneXPos = Math.max(airplaneXPos - dX, 0 + 40);
-	}
-
-	if (upPressed) {
-		airplaneYPos = Math.max(airplaneYPos - dY, 10);
-	} else if (downPressed) {
-		airplaneYPos = Math.min(
-			airplaneYPos + dY,
-			canvas.height - airplaneBaseHeight
-		);
 	}
 }
 
 function startGameBtn() {
 	document.getElementById("start-game-btn").disabled = true;
 	document.addEventListener("keydown", keyDownHandler, false);
-	document.addEventListener("keyup", keyUpHandler, false);
-	canvasUpdateInterval = setInterval(updateCanvas, 100 / 60);
-	timeIncreaseInterval = setInterval(increaseTime, 10);
-	objectCreationInterval = setInterval(createObject, 1500);
+	canvasUpdateInterval = setInterval(updateCanvas, ONE_HUNDRED / SIXTY);
+	timeIncreaseInterval = setInterval(increaseTime, TEN);
+	objectCreationInterval = setInterval(createObject, createObjInterval);
 }
 
 function keyDownHandler(e) {
-	if (e.key === "right" || e.key === "ArrowRight") {
-		rightPressed = true;
-	} else if (e.key === "left" || e.key === "ArrowLeft") {
-		leftPressed = true;
-	} else if (e.key === "up" || e.key === "ArrowUp") {
-		upPressed = true;
-	} else if (e.key === "down" || e.key === "ArrowDown") {
-		downPressed = true;
-	}
-}
-
-function keyUpHandler(e) {
-	if (e.key === "right" || e.key === "ArrowRight") {
-		rightPressed = false;
-	} else if (e.key === "left" || e.key === "ArrowLeft") {
-		leftPressed = false;
-	} else if (e.key === "up" || e.key === "ArrowUp") {
-		upPressed = false;
-	} else if (e.key === "down" || e.key === "ArrowDown") {
-		downPressed = false;
+	switch (e.key) {
+		case "ArrowRight":
+		case "right":
+			airplaneXPos = Math.min(
+				airplaneXPos + dX,
+				canvas.width - airplaneBaseWidth - FORTY
+			);
+			break;
+		case "ArrowLeft":
+		case "left":
+			airplaneXPos = Math.max(airplaneXPos - dX, 0 + FORTY);
+			break;
+		case "ArrowUp":
+		case "up":
+			airplaneYPos = Math.max(airplaneYPos - dY, TEN);
+			break;
+		case "ArrowDown":
+		case "down":
+			airplaneYPos = Math.min(
+				airplaneYPos + dY,
+				canvas.height - airplaneBaseHeight
+			);
+			break;
+		default:
+			break;
 	}
 }
 
 function createObject() {
 	const object = {
-		width: Math.random() * 20 + 20,
-		height: Math.random() * 40 + 20,
-		x: Math.random() * (canvas.width - 60),
-		y: -60,
+		width: Math.random() * TWENTY + TWENTY,
+		height: Math.random() * FORTY + TWENTY,
+		x: Math.random() * (canvas.width - SIXTY),
+		y: -SIXTY,
 		speed: Math.random() * 2 + 0.5,
 	};
 	objects.push(object);
 }
+
 createObject();
 
-function drawObject() {
+function drawObjects() {
 	for (let i = 0; i < objects.length; ++i) {
 		ctx.beginPath();
 		ctx.fillStyle = "red";
@@ -261,7 +227,8 @@ function drawObject() {
 		objects[i].y += objects[i].speed;
 	}
 }
-drawObject();
+
+drawObjects();
 
 function collisionDetection(object) {
 	if (
