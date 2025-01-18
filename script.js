@@ -15,8 +15,8 @@ let airplaneYPos = canvas.height - airplaneBaseHeight - 10;
 let time = 0;
 let elapsedTime = 0;
 const oneSecond = 1000;
-let dX = 2;
-let dY = 2;
+let dX = 10;
+let dY = 10;
 
 let canvasUpdateInterval;
 let timeIncreaseInterval;
@@ -171,31 +171,20 @@ function startGameBtn() {
 }
 
 function keyDownHandler(e) {
-	switch (e.key) {
-		case "ArrowRight":
-		case "right":
-			airplaneXPos = Math.min(
-				airplaneXPos + dX,
-				canvas.width - airplaneBaseWidth - FORTY
-			);
-			break;
-		case "ArrowLeft":
-		case "left":
-			airplaneXPos = Math.max(airplaneXPos - dX, 0 + FORTY);
-			break;
-		case "ArrowUp":
-		case "up":
-			airplaneYPos = Math.max(airplaneYPos - dY, TEN);
-			break;
-		case "ArrowDown":
-		case "down":
-			airplaneYPos = Math.min(
-				airplaneYPos + dY,
-				canvas.height - airplaneBaseHeight
-			);
-			break;
-		default:
-			break;
+	if (e.key == "ArrowRight" || e.key == "Right") {
+		airplaneXPos = Math.min(
+			airplaneXPos + dX,
+			canvas.width - airplaneBaseWidth - FORTY
+		);
+	} else if (e.key == "ArrowLeft" || e.key == "Left") {
+		airplaneXPos = Math.max(airplaneXPos - dX, 0 + FORTY);
+	} else if (e.key == "ArrowUp" || e.key == "Up") {
+		airplaneYPos = Math.max(airplaneYPos - dY, TEN);
+	} else if (e.key == "ArrowDown" || e.key == "Down") {
+		airplaneYPos = Math.min(
+			airplaneYPos + dY,
+			canvas.height - airplaneBaseHeight
+		);
 	}
 }
 
