@@ -24,62 +24,124 @@ let objectCreationInterval;
 let gameOver = false;
 let objects = [];
 
-function drawPlane() {
-	// body
+// style of the airplane
+function style(fillStyle, strokeStyle, globalAlpha) {
+	ctx.fillStyle = fillStyle;
+	ctx.strokeStyle = strokeStyle;
+	ctx.globalAlpha = globalAlpha;
+}
+
+// function for drawing a airplane body
+function drawRectangle(
+	x,
+	y,
+	width,
+	height,
+	fillStyle,
+	strokeStyle,
+	globalAlpha
+) {
+	style(fillStyle, strokeStyle, globalAlpha);
 	ctx.beginPath();
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "red";
-	ctx.globalAlpha = 1.0;
-	ctx.rect(airplaneXPos, airplaneYPos, airplaneBaseWidth, airplaneBaseHeight);
+	ctx.rect(x, y, width, height);
 	ctx.fill();
 	ctx.stroke();
-	ctx.globalAlpha = 1.0;
 	ctx.closePath();
+}
 
-	//left wing
+// function for drawing a airplane wing
+function drawWing(
+	startX,
+	startY,
+	offsetX1,
+	offsetY1,
+	offsetX2,
+	offsetY2,
+	fillStyle,
+	strokeStyle,
+	globalAlpha
+) {
+	style(fillStyle, strokeStyle, globalAlpha);
+	ctx.beginPath();
+	ctx.moveTo(startX, startY);
+	ctx.lineTo(startX + offsetX1, startY + offsetY1);
+	ctx.lineTo(startX + offsetX2, startY + offsetY2);
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+}
+
+// function for drawing a airplane head
+function drawCircle(
+	centerX,
+	centerY,
+	radius,
+	startAngle,
+	endAngle,
+	fillStyle,
+	strokeStyle,
+	globalAlpha
+) {
+	style(fillStyle, strokeStyle, globalAlpha);
+	ctx.beginPath();
+	ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+}
+
+// drawing the airplane
+function drawPlane() {
+	// head
+	drawRectangle(
+		airplaneXPos,
+		airplaneYPos,
+		airplaneBaseWidth,
+		airplaneBaseHeight,
+		"white",
+		"red",
+		1.0
+	);
+
+	// left wing
 	const wingXPosStart = airplaneXPos;
 	const wingYPosStart = airplaneYPos + airplaneBaseHeight / 2;
-	ctx.beginPath();
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "red";
-	ctx.globalAlpha = 1.0;
-	ctx.moveTo(wingXPosStart, wingYPosStart);
-	ctx.lineTo(wingXPosStart - FORTY, wingYPosStart + SIXTY);
-	ctx.lineTo(wingXPosStart, wingYPosStart + THIRTY);
-	ctx.fill();
-	ctx.stroke();
-	ctx.globalAlpha = 1.0;
-	ctx.closePath();
+	drawWing(
+		wingXPosStart,
+		wingYPosStart,
+		-FORTY,
+		SIXTY,
+		0,
+		THIRTY,
+		"white",
+		"red",
+		1.0
+	);
 
-	//right wing
-	ctx.beginPath();
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "red";
-	ctx.globalAlpha = 1.0;
-	ctx.moveTo(wingXPosStart + airplaneBaseWidth, wingYPosStart);
-	ctx.lineTo(wingXPosStart + SIXTY, wingYPosStart + SIXTY);
-	ctx.lineTo(wingXPosStart + airplaneBaseWidth, wingYPosStart + THIRTY);
-	ctx.fill();
-	ctx.stroke();
-	ctx.globalAlpha = 1.0;
-	ctx.closePath();
+	// right wing
+	drawWing(
+		wingXPosStart + airplaneBaseWidth,
+		wingYPosStart,
+		FORTY,
+		SIXTY,
+		0,
+		THIRTY,
+		"white",
+		"red",
+		1.0
+	);
 
 	// head
-	ctx.beginPath();
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "red";
-	ctx.globalAlpha = 1.0;
-	ctx.arc(
+	drawCircle(
 		wingXPosStart + airplaneBaseWidth / 2,
 		airplaneYPos,
 		airplaneBaseWidth / 2,
 		Math.PI,
-		0
+		0,
+		"white",
+		"red",
+		1.0
 	);
-	ctx.fill();
-	ctx.stroke();
-	ctx.globalAlpha = 1.0;
-	ctx.closePath();
 }
 
 drawPlane();
