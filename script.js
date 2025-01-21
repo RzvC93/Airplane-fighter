@@ -31,60 +31,35 @@ function style(fillStyle, strokeStyle, globalAlpha) {
 	ctx.globalAlpha = globalAlpha;
 }
 
-// function for drawing a airplane body
-function drawRectangle(
+// function for drawing objects
+function drawObject(
+	type,
 	x,
 	y,
 	width,
 	height,
-	fillStyle,
-	strokeStyle,
-	globalAlpha
-) {
-	style(fillStyle, strokeStyle, globalAlpha);
-	ctx.beginPath();
-	ctx.rect(x, y, width, height);
-	ctx.fill();
-	ctx.stroke();
-	ctx.closePath();
-}
-
-// function for drawing a airplane wing
-function drawWing(
-	startX,
-	startY,
-	offsetX1,
-	offsetY1,
-	offsetX2,
-	offsetY2,
-	fillStyle,
-	strokeStyle,
-	globalAlpha
-) {
-	style(fillStyle, strokeStyle, globalAlpha);
-	ctx.beginPath();
-	ctx.moveTo(startX, startY);
-	ctx.lineTo(startX + offsetX1, startY + offsetY1);
-	ctx.lineTo(startX + offsetX2, startY + offsetY2);
-	ctx.fill();
-	ctx.stroke();
-	ctx.closePath();
-}
-
-// function for drawing a airplane head
-function drawCircle(
-	centerX,
-	centerY,
 	radius,
 	startAngle,
 	endAngle,
+	startX1,
+	startY1,
+	endX2,
+	endY2,
 	fillStyle,
 	strokeStyle,
 	globalAlpha
 ) {
 	style(fillStyle, strokeStyle, globalAlpha);
 	ctx.beginPath();
-	ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+	if (type === "body") {
+		ctx.rect(x, y, width, height);
+	} else if (type === "head") {
+		ctx.arc(x, y, radius, startAngle, endAngle);
+	} else if (type === "wing") {
+		ctx.moveTo(x, y);
+		ctx.lineTo(x + startX1, y + startY1);
+		ctx.lineTo(x + endX2, y + endY2);
+	}
 	ctx.fill();
 	ctx.stroke();
 	ctx.closePath();
@@ -92,12 +67,20 @@ function drawCircle(
 
 // drawing the airplane
 function drawPlane() {
-	// head
-	drawRectangle(
+	// body
+	drawObject(
+		"body",
 		airplaneXPos,
 		airplaneYPos,
 		airplaneBaseWidth,
 		airplaneBaseHeight,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
+		null,
 		"white",
 		"red",
 		1.0
@@ -106,38 +89,57 @@ function drawPlane() {
 	// left wing
 	const wingXPosStart = airplaneXPos;
 	const wingYPosStart = airplaneYPos + airplaneBaseHeight / 2;
-	drawWing(
+	drawObject(
+		"wing",
 		wingXPosStart,
 		wingYPosStart,
-		-FORTY,
-		SIXTY,
+		null,
+		null,
+		null,
+		null,
+		null,
+		-40,
+		60,
 		0,
-		THIRTY,
+		30,
 		"white",
 		"red",
 		1.0
 	);
 
 	// right wing
-	drawWing(
+	drawObject(
+		"wing",
 		wingXPosStart + airplaneBaseWidth,
 		wingYPosStart,
-		FORTY,
-		SIXTY,
+		null,
+		null,
+		null,
+		null,
+		null,
+		40,
+		60,
 		0,
-		THIRTY,
+		30,
 		"white",
 		"red",
 		1.0
 	);
 
 	// head
-	drawCircle(
+	drawObject(
+		"head",
 		wingXPosStart + airplaneBaseWidth / 2,
 		airplaneYPos,
+		null,
+		null,
 		airplaneBaseWidth / 2,
 		Math.PI,
 		0,
+		null,
+		null,
+		null,
+		null,
 		"white",
 		"red",
 		1.0
