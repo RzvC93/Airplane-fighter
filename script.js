@@ -170,35 +170,14 @@ function drawPlane() {
 
 drawPlane();
 
-function drawScoreByTime() {
+function drawScore(text, value, yPosition) {
 	ctx.font = "30px bold Permanent Marker";
 	ctx.fillStyle = "white";
-	const scoreWidth = ctx.measureText(`Time: ${time}`).width;
-	const xPosition = Math.min(TWENTY, canvas.width - scoreWidth - TWENTY);
-	ctx.fillText(`Time: ${time}`, xPosition, FORTY);
+	const scoreText = `${text}: ${value}`;
+	const scoreWidth = ctx.measureText(scoreText).width;
+	const xPosition = Math.min(20, canvas.width - scoreWidth - 20);
+	ctx.fillText(scoreText, xPosition, yPosition);
 }
-
-drawScoreByTime();
-
-function drawScoreByAvoidedObjects() {
-	ctx.font = "30px bold Permanent Marker";
-	ctx.fillStyle = "white";
-	const avoidedWidth = ctx.measureText(`Avoided: ${avoided}`).width;
-	const xPosition = Math.min(TWENTY, canvas.width - avoidedWidth - TWENTY);
-	ctx.fillText(`Avoided: ${avoided}`, xPosition, EIGHTY);
-}
-
-drawScoreByAvoidedObjects();
-
-function drawScoreByDestroyedObjects() {
-	ctx.font = "30px bold Permanent Marker";
-	ctx.fillStyle = "white";
-	const destroyedWidth = ctx.measureText(`Destroyed: ${destroyed}`).width;
-	const xPosition = Math.min(TWENTY, canvas.width - destroyedWidth - TWENTY);
-	ctx.fillText(`Destroyed: ${destroyed}`, xPosition, ONE_HUNDRED_TWENTY);
-}
-
-drawScoreByDestroyedObjects();
 
 function drawTimer() {
 	ctx.font = "30px bold Permanent Marker";
@@ -270,9 +249,9 @@ function updateCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawPlane();
 	drawObjects();
-	drawScoreByTime();
-	drawScoreByAvoidedObjects();
-	drawScoreByDestroyedObjects();
+	drawScore("Time", time, 40);
+	drawScore("Avoided", avoided, 80);
+	drawScore("Destroyed", destroyed, 120);
 	drawTimer();
 	drawBomb();
 }
@@ -332,11 +311,21 @@ function drawObjects() {
 		objects[i].y += objects[i].speed;
 
 		// checking the collision between the airplane and the object
-		if (collisionPlaneObj(objects[i])) {
+		if (
+			checkCollision(
+				airplaneXPos,
+				airplaneYPos,
+				airplaneBaseWidth,
+				airplaneBaseHeight,
+				objects[i].x,
+				objects[i].y,
+				objects[i].width,
+				objects[i].height
+			)
+		) {
 			objects.splice(i, 1);
 			--i;
 			gameOver = true;
-			return;
 		}
 
 		// Check if the object has reached the bottom of the canvas
@@ -348,13 +337,25 @@ function drawObjects() {
 
 		// checking the collision between bomb and object
 		for (let j = 0; j < bombs.length; ++j) {
-			if (collisionBombObj(bombs[j], objects[i])) {
+			if (
+				checkCollision(
+					bombs[j].x,
+					bombs[j].y,
+					0,
+					0,
+					objects[i].x,
+					objects[i].y,
+					objects[i].width,
+					objects[i].height,
+					true,
+					bombs[j].radius
+				)
+			) {
 				objects.splice(i, 1);
 				bombs.splice(j, 1);
 				--i;
 				--j;
 				++destroyed;
-				return;
 			}
 		}
 	}
@@ -381,31 +382,26 @@ function drawBomb() {
 	}
 }
 
-function collisionPlaneObj(object) {
-	if (
-		airplaneXPos < object.x + object.width &&
-		airplaneXPos + airplaneBaseWidth > object.x &&
-		airplaneYPos < object.y + object.height &&
-		airplaneYPos + airplaneBaseHeight > object.y
-	) {
-		return true;
+function checkCollision(
+	x1,
+	y1,
+	w1,
+	h1,
+	x2,
+	y2,
+	w2,
+	h2,
+	isBomb = false,
+	radius = 0
+) {
+	if (isBomb) {
+		return (
+			x1 + radius > x2 &&
+			x1 - radius < x2 + w2 &&
+			y1 + radius > y2 &&
+			y1 - radius < y2 + h2
+		);
+	} else {
+		return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
 	}
-	return false;
-}
-
-function collisionBombObj(bomb, object) {
-	// Check if the bomb touches the right side of the rectangle
-	if (
-		bomb.x + bomb.radius > object.x &&
-		bomb.x - bomb.radius < object.x + object.width
-	) {
-		// Check if the bomb touches the bottom of the rectangle
-		if (
-			bomb.y + bomb.radius > object.y &&
-			bomb.y - bomb.radius < object.y + object.height
-		) {
-			return true;
-		}
-	}
-	return false;
 }
