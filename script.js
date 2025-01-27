@@ -14,11 +14,15 @@ const ONE_HUNDRED_EIGHTY = 180;
 const THREE_HUNDRED = 300;
 const createObjInterval = 1500;
 
-// airplane width, height and position
-const airplaneBaseWidth = 20;
-const airplaneBaseHeight = 120;
-let airplaneXPos = canvas.width / 2 - airplaneBaseWidth / 2;
-let airplaneYPos = canvas.height - airplaneBaseHeight - 10;
+// airplane details
+const airplane = {
+	width: 20,
+	height: 120,
+	x: canvas.width / 2 - 20 / 2,
+	y: canvas.height - 120 - 10,
+	speedX: 10,
+	speedY: 10,
+};
 
 // score
 let time = 0;
@@ -26,16 +30,11 @@ let avoided = 0;
 let destroyed = 0;
 
 // time
-let elapsedTime = 0;
+let startTime = 0;
 const oneSecond = 1000;
-
-// airplane movement
-let dX = 10;
-let dY = 10;
 
 // intervals
 let canvasUpdateInterval;
-let timeIncreaseInterval;
 let objectCreationInterval;
 let bombCreationInterval;
 
@@ -92,10 +91,10 @@ function drawPlane() {
 	// body
 	drawObject(
 		"body",
-		airplaneXPos,
-		airplaneYPos,
-		airplaneBaseWidth,
-		airplaneBaseHeight,
+		airplane.x,
+		airplane.y,
+		airplane.width,
+		airplane.height,
 		null,
 		null,
 		null,
@@ -109,8 +108,8 @@ function drawPlane() {
 	);
 
 	// left wing
-	const wingXPosStart = airplaneXPos;
-	const wingYPosStart = airplaneYPos + airplaneBaseHeight / 2;
+	const wingXPosStart = airplane.x;
+	const wingYPosStart = airplane.y + airplane.height / 2;
 	drawObject(
 		"wing",
 		wingXPosStart,
@@ -132,7 +131,7 @@ function drawPlane() {
 	// right wing
 	drawObject(
 		"wing",
-		wingXPosStart + airplaneBaseWidth,
+		wingXPosStart + airplane.width,
 		wingYPosStart,
 		null,
 		null,
@@ -151,11 +150,11 @@ function drawPlane() {
 	// head
 	drawObject(
 		"head",
-		wingXPosStart + airplaneBaseWidth / 2,
-		airplaneYPos,
+		wingXPosStart + airplane.width / 2,
+		airplane.y,
 		null,
 		null,
-		airplaneBaseWidth / 2,
+		airplane.width / 2,
 		Math.PI,
 		0,
 		null,
@@ -170,52 +169,9 @@ function drawPlane() {
 
 drawPlane();
 
-function drawScore(text, value, yPosition) {
-	ctx.font = "30px bold Permanent Marker";
-	ctx.fillStyle = "white";
-	const scoreText = `${text}: ${value}`;
-	const scoreWidth = ctx.measureText(scoreText).width;
-	const xPosition = Math.min(20, canvas.width - scoreWidth - 20);
-	ctx.fillText(scoreText, xPosition, yPosition);
-}
-
-function drawTimer() {
-	ctx.font = "30px bold Permanent Marker";
-	ctx.fillStyle = "white";
-	ctx.globalAlpha = 0.3;
-
-	// Calculate the minutes, seconds and milliseconds of the total elapsed time.
-	let milliseconds = elapsedTime % oneSecond;
-	let seconds = Math.floor(elapsedTime / oneSecond) % SIXTY;
-	let minutes = Math.floor(elapsedTime / oneSecond / SIXTY);
-
-	// Format the timer
-	const timerText = `${minutes.toString().padStart(2, "0")}:${seconds
-		.toString()
-		.padStart(2, "0")}:${milliseconds.toString().padStart(3, "0")}`;
-
-	// Calculate the width of the text to position it correctly.
-	const timerTextWidth = ctx.measureText(timerText).width;
-	const xPosition = Math.max(canvas.width - timerTextWidth - TWENTY, TWENTY);
-
-	// Draw the text on canvas.
-	ctx.fillText(timerText, xPosition, FORTY);
-	ctx.globalAlpha = 1.0;
-}
-
-drawTimer();
-
-function increaseTime() {
-	elapsedTime += TEN;
-	if (elapsedTime % oneSecond === 0) {
-		time += 1;
-	}
-}
-
 function updateCanvas() {
 	if (gameOver) {
 		clearInterval(canvasUpdateInterval);
-		clearInterval(timeIncreaseInterval);
 		clearInterval(objectCreationInterval);
 		clearInterval(bombCreationInterval);
 
@@ -246,6 +202,8 @@ function updateCanvas() {
 		return;
 	}
 
+	time = Math.floor((Date.now() - startTime) / 1000);
+
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	drawPlane();
 	drawObjects();
@@ -256,29 +214,72 @@ function updateCanvas() {
 	drawBomb();
 }
 
+function drawScore(text, value, yPosition) {
+	ctx.font = "30px bold Permanent Marker";
+	ctx.fillStyle = "white";
+	const scoreText = `${text}: ${value}`;
+	const scoreWidth = ctx.measureText(scoreText).width;
+	const xPosition = Math.min(20, canvas.width - scoreWidth - 20);
+	ctx.fillText(scoreText, xPosition, yPosition);
+}
+
+function drawTimer() {
+	ctx.font = "30px bold Permanent Marker";
+	ctx.fillStyle = "white";
+	ctx.globalAlpha = 0.3;
+
+	// If startTime = 0, display "00:00:000"
+	let timerText;
+	if (startTime === 0) {
+		timerText = "00:00:000";
+	} else {
+		// Calculate the total elapsed time.
+		const elapsedTime = Date.now() - startTime;
+
+		let milliseconds = elapsedTime % oneSecond;
+		let seconds = Math.floor(elapsedTime / oneSecond) % SIXTY;
+		let minutes = Math.floor(elapsedTime / oneSecond / SIXTY);
+
+		// Format the timer
+		timerText = `${minutes.toString().padStart(2, "0")}:${seconds
+			.toString()
+			.padStart(2, "0")}:${milliseconds.toString().padStart(3, "0")}`;
+	}
+
+	// Calculate the width of the text to position it correctly.
+	const timerTextWidth = ctx.measureText(timerText).width;
+	const xPosition = Math.max(canvas.width - timerTextWidth - TWENTY, TWENTY);
+
+	// Draw the text on canvas.
+	ctx.fillText(timerText, xPosition, FORTY);
+	ctx.globalAlpha = 1.0;
+}
+
+drawTimer();
+
 function startGameBtn() {
 	document.getElementById("start-game-btn").disabled = true;
 	document.addEventListener("keydown", keyDownHandler, false);
+	startTime = Date.now();
 	canvasUpdateInterval = setInterval(updateCanvas, ONE_HUNDRED / SIXTY);
-	timeIncreaseInterval = setInterval(increaseTime, TEN);
 	objectCreationInterval = setInterval(createObject, createObjInterval);
 	bombCreationInterval = setInterval(createBomb, THREE_HUNDRED);
 }
 
 function keyDownHandler(e) {
 	if (e.key == "ArrowRight" || e.key == "Right") {
-		airplaneXPos = Math.min(
-			airplaneXPos + dX,
-			canvas.width - airplaneBaseWidth - FORTY
+		airplane.x = Math.min(
+			airplane.x + airplane.speedX,
+			canvas.width - airplane.width - FORTY
 		);
 	} else if (e.key == "ArrowLeft" || e.key == "Left") {
-		airplaneXPos = Math.max(airplaneXPos - dX, 0 + FORTY);
+		airplane.x = Math.max(airplane.x - airplane.speedX, 0 + FORTY);
 	} else if (e.key == "ArrowUp" || e.key == "Up") {
-		airplaneYPos = Math.max(airplaneYPos - dY, TEN);
+		airplane.y = Math.max(airplane.y - airplane.speedY, TEN);
 	} else if (e.key == "ArrowDown" || e.key == "Down") {
-		airplaneYPos = Math.min(
-			airplaneYPos + dY,
-			canvas.height - airplaneBaseHeight
+		airplane.y = Math.min(
+			airplane.y + airplane.speedY,
+			canvas.height - airplane.height
 		);
 	}
 }
@@ -313,10 +314,10 @@ function drawObjects() {
 		// checking the collision between the airplane and the object
 		if (
 			checkCollision(
-				airplaneXPos,
-				airplaneYPos,
-				airplaneBaseWidth,
-				airplaneBaseHeight,
+				airplane.x,
+				airplane.y,
+				airplane.width,
+				airplane.height,
 				objects[i].x,
 				objects[i].y,
 				objects[i].width,
@@ -364,8 +365,8 @@ function drawObjects() {
 function createBomb() {
 	const bomb = {
 		radius: 5,
-		x: airplaneXPos + airplaneBaseWidth / 2,
-		y: airplaneYPos,
+		x: airplane.x + airplane.width / 2,
+		y: airplane.y,
 		speed: 5,
 	};
 	bombs.push(bomb);
@@ -401,7 +402,6 @@ function checkCollision(
 			y1 + radius > y2 &&
 			y1 - radius < y2 + h2
 		);
-	} else {
-		return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
 	}
+	return x1 < x2 + w2 && x1 + w1 > x2 && y1 < y2 + h2 && y1 + h1 > y2;
 }
